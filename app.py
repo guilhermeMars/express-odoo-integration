@@ -10,7 +10,7 @@ ODOO_DB = "ebramev-corporativo"
 ODOO_USERNAME = "marketing3@ebramev.com.br"
 ODOO_PASSWORD = os.getenv("ODOO_KEY")
 
-if not API_KEY:
+if not ODOO_PASSWORD:
     raise ValueError("API_KEY não está definida nas variáveis de ambiente.")
 
 # Autenticação no Odoo
