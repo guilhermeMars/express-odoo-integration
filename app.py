@@ -10,6 +10,9 @@ ODOO_DB = "ebramev-corporativo"
 ODOO_USERNAME = "marketing3@ebramev.com.br"
 ODOO_PASSWORD = os.getenv("ODOO_KEY")
 
+if not API_KEY:
+    raise ValueError("API_KEY não está definida nas variáveis de ambiente.")
+
 # Autenticação no Odoo
 def odoo_authenticate():
     common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(ODOO_URL))
