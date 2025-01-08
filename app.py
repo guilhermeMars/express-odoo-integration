@@ -14,6 +14,8 @@ ODOO_PASSWORD = os.getenv("ODOO_KEY")
 def odoo_authenticate():
     common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(ODOO_URL))
     uid = common.authenticate(ODOO_DB, ODOO_USERNAME, ODOO_PASSWORD, {})
+    if not uid:
+        raise Exception("Failed to authenticate with Odoo")
     return uid
 
 # Criação de uma cobrança no Odoo
@@ -21,9 +23,12 @@ def create_invoice_in_odoo(data):
     user_id = odoo_authenticate()
     models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(ODOO_URL))
 
-    created_id = models.execute_kw(ODOO_DB, user_id, ODOO_PASSWORD, 'x_receitas', 'create', [{
-        'x_name': data.get("customer"),
-    }])
+    try:
+        created_id = models.execute_kw(ODOO_DB, user_id, ODOO_PASSWORD, 'x_receitas', 'create', [{
+            'x_name': data.get("customer"),
+        }])
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
     return created_id
 
@@ -31,6 +36,8 @@ def create_invoice_in_odoo(data):
 def asaas_webhook():
     data = request.json
     if data and data.get("event") == "PAYMENT_CREATED":
+        if not data.get("customer"):
+            return jsonify({"status": "error", "message": "Missing customer data"}), 400
         response = create_invoice_in_odoo(data)
         return jsonify(response)
     return jsonify({"status": "ignored"}), 200
