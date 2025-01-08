@@ -1,13 +1,14 @@
 from flask import Flask, request, jsonify
-import requests
+import os
 import xmlrpc.client
+
 
 app = Flask(__name__)
 
 ODOO_URL = "https://ebramev-corporativo.odoo.com/"
 ODOO_DB = "ebramev-corporativo"
 ODOO_USERNAME = "marketing3@ebramev.com.br"
-ODOO_PASSWORD = "4f2f61da00b82bf50bc98ecb89ce8df2cd9a67a8"
+ODOO_PASSWORD = os.getenv("ODOO_KEY")
 
 # Autenticação no Odoo
 def odoo_authenticate():
@@ -35,4 +36,5 @@ def asaas_webhook():
     return jsonify({"status": "ignored"}), 200
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    port = int(os.environ.get("PORT", 5000))  # Porta dinâmica ou 5000 padrão
+    app.run(host='0.0.0.0', port=port)
