@@ -9,7 +9,7 @@ app.use(express.json());
 const ODOO_URL = "https://ebramev-corporativo.odoo.com";
 const ODOO_DB = "ebramev-corporativo";
 const ODOO_USERNAME = "marketing3@ebramev.com.br";
-const ODOO_PASSWORD = "4f2f61da00b82bf50bc98ecb89ce8df2cd9a67a8";
+const ODOO_PASSWORD = process.env.ODOO_KEY;
 
 // Helper function to create XML-RPC client
 function create_client(path) {
@@ -39,6 +39,7 @@ async function odoo_authenticate() {
 async function create_invoice_odoo(uid, data) {
   return new Promise((resolve, reject) => {
     const object_client = create_client("/xmlrpc/2/object");
+    console.log(data);
     object_client.methodCall(
       "execute_kw",
       [
@@ -50,7 +51,18 @@ async function create_invoice_odoo(uid, data) {
         "create",
         [
           {
+            x_studio_id: data.id,
             x_name: data.customer,
+            x_studio_date: data.dateCreated,
+            x_studio_descrio: data.description,
+            x_studio_vencimento: data.dueDate,
+            x_studio_data_de_pagamento: data.paymentDate,
+            x_studio_data_de_crdito: data.creditDate,
+            x_studio_status: data.status,
+            x_studio_value: data.value,
+            x_studio_valor_lquido: data.netValue,
+            x_studio_forma_de_pagamento: data.billingType,
+            x_studio_nmero_da_fatura: data.invoiceNumber,
           },
         ],
       ],
@@ -75,7 +87,7 @@ app.post("/create-invoice-odoo", async (req, res) => {
     }
 
     const uid = await odoo_authenticate();
-    const created_id = await create_invoice_odoo(uid, { body });
+    const created_id = await create_invoice_odoo(uid, body);
 
     res.json({ status: "success", created_id });
   } catch (error) {
