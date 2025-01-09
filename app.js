@@ -1,5 +1,6 @@
 const express = require("express");
 const xmlrpc = require("xmlrpc");
+require("dotenv").config();
 
 const app = express();
 const port = 5000;
@@ -9,7 +10,7 @@ app.use(express.json());
 const ODOO_URL = "https://ebramev-corporativo.odoo.com";
 const ODOO_DB = "ebramev-corporativo";
 const ODOO_USERNAME = "marketing3@ebramev.com.br";
-const ODOO_PASSWORD = "4f2f61da00b82bf50bc98ecb89ce8df2cd9a67a8";
+const ODOO_PASSWORD = process.env.ODOO_KEY;
 
 // Helper function to create XML-RPC client
 function create_client(path) {
