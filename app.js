@@ -62,7 +62,7 @@ async function create_invoice_odoo(uid, data) {
             x_studio_value: data.value,
             x_studio_valor_lquido: data.netValue,
             x_studio_forma_de_pagamento: data.billingType,
-            x_studio_nmero_da_fatura: parseInt(data.invoiceNumber),
+            x_studio_nmero_da_fatura: parseInt(data.invoiceNumber) || 0,
           },
         ],
       ],
