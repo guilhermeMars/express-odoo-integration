@@ -9,7 +9,7 @@ app.use(express.json());
 const ODOO_URL = "https://ebramev-corporativo.odoo.com";
 const ODOO_DB = "ebramev-corporativo";
 const ODOO_USERNAME = "marketing3@ebramev.com.br";
-const ODOO_PASSWORD = process.env.ODOO_KEY;
+const ODOO_PASSWORD = "4f2f61da00b82bf50bc98ecb89ce8df2cd9a67a8";
 
 // Helper function to create XML-RPC client
 function create_client(path) {
@@ -51,7 +51,7 @@ async function create_invoice_odoo(uid, data) {
         "create",
         [
           {
-            x_studio_id: data.id,
+            x_studio_id_1: data.id,
             x_name: data.customer,
             x_studio_date: data.dateCreated,
             x_studio_descrio: data.description,
@@ -62,7 +62,7 @@ async function create_invoice_odoo(uid, data) {
             x_studio_value: data.value,
             x_studio_valor_lquido: data.netValue,
             x_studio_forma_de_pagamento: data.billingType,
-            x_studio_nmero_da_fatura: data.invoiceNumber,
+            x_studio_nmero_da_fatura: parseInt(data.invoiceNumber),
           },
         ],
       ],
