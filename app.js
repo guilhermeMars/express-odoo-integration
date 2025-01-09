@@ -39,7 +39,6 @@ async function odoo_authenticate() {
 async function create_invoice_odoo(uid, data) {
   return new Promise((resolve, reject) => {
     const object_client = create_client("/xmlrpc/2/object");
-    console.log(data);
     object_client.methodCall(
       "execute_kw",
       [
@@ -51,18 +50,26 @@ async function create_invoice_odoo(uid, data) {
         "create",
         [
           {
-            x_studio_id_1: data.id,
-            x_name: data.customer,
             x_studio_date: data.dateCreated,
-            x_studio_descrio: data.description,
-            x_studio_vencimento: data.dueDate,
-            x_studio_data_de_pagamento: data.paymentDate,
-            x_studio_data_de_crdito: data.creditDate,
-            x_studio_status: data.status,
-            x_studio_value: data.value,
-            x_studio_valor_lquido: data.netValue,
-            x_studio_forma_de_pagamento: data.billingType,
-            x_studio_nmero_da_fatura: parseInt(data.invoiceNumber) || 0,
+            x_name: data.payment.id,
+            x_studio_descrio: data.payment.description,
+            x_studio_id_1: data.payment.customer,
+            ...(data.payment.dueDate
+              ? { x_studio_vencimento: data.payment.dueDate }
+              : {}),
+            ...(data.payment.paymentDate
+              ? { x_studio_data_de_pagamento: data.payment.paymentDate }
+              : {}),
+            ...(data.payment.creditDate
+              ? { x_studio_data_de_crdito: data.payment.creditDate }
+              : {}),
+            x_studio_status: data.payment.status,
+            x_studio_value: data.payment.value,
+            x_studio_valor_lquido: data.payment.netValue,
+            ...(data.billingType && data.billingType !== "UNDEFINED"
+              ? { x_studio_forma_de_pagamento: data.billingType }
+              : {}),
+            x_studio_nmero_da_fatura: parseInt(data.payment.invoiceNumber) || 0,
           },
         ],
       ],
