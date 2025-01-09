@@ -1,20 +1,23 @@
-# Usar uma imagem oficial do Python
-FROM python:3.9-slim
+# Use Node.js como base
+FROM node:18
 
-# Definir o diretório de trabalho
+# Configuração do ambiente de trabalho
 WORKDIR /app
 
-# Copiar arquivos de dependências
-COPY requirements.txt requirements.txt
+# Copia o package.json e package-lock.json para instalar dependências
+COPY package*.json ./
 
-# Instalar dependências
-RUN pip install --no-cache-dir -r requirements.txt
+# Instala as dependências
+RUN npm install
 
-# Copiar o restante do código
+# Copia todo o código para o container
 COPY . .
 
-# Expor a porta do Flask
+# Expõe a porta utilizada pela aplicação
 EXPOSE 5000
 
-# Comando para rodar a aplicação
-CMD ["python", "app.py"]
+# Define a variável de ambiente ODOO_KEY
+ENV ODOO_KEY=your_odoo_password_here
+
+# Comando para iniciar o servidor
+CMD ["node", "app.js"]
