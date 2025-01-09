@@ -85,6 +85,49 @@ async function create_invoice_odoo(uid, data) {
   });
 }
 
+async function delete_invoice_odoo(uid, data) {
+  return new Promise((resolve, reject) => {
+    const object_client = create_client("/xmlrpc/2/object");
+
+    object_client.methodCall(
+      "execute_kw",
+      [
+        ODOO_DB,
+        uid,
+        ODOO_PASSWORD,
+        // Alterar
+        "x_receitas",
+        "search_read",
+        [[["x_name", "=", data.payment.id]]],
+        { limit: 1 },
+      ],
+      (err, recordIds) => {
+        if (err) {
+          return reject(err);
+        }
+        if (!recordIds || recordIds.length === 0) {
+          return reject(new Error("No matching records found for deletion"));
+        }
+
+        const recordId = recordIds[0];
+
+        // Em seguida, excluir os registros encontrados
+        object_client.methodCall(
+          "execute_kw",
+          [ODOO_DB, uid, ODOO_PASSWORD, "x_receitas", "unlink", [[recordId]]],
+          (err, result) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(result); // Retorna o número de registros excluídos
+            }
+          }
+        );
+      }
+    );
+  });
+}
+
 app.post("/create-invoice-odoo", async (req, res) => {
   try {
     const { body } = req;
@@ -105,4 +148,22 @@ app.post("/create-invoice-odoo", async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
+});
+
+app.post("/delete-invoice-odoo", async (req, res) => {
+  try {
+    const { body } = req;
+    if (!body) {
+      return res
+        .status(400)
+        .json({ status: "error", message: `Missing request ${body}` });
+    }
+
+    const uid = await odoo_authenticate();
+    const deleted_id = await delete_invoice_odoo(uid, body);
+
+    res.json({ status: "success", deleted_id });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
 });
