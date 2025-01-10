@@ -114,12 +114,19 @@ async function delete_invoice_odoo(uid, data) {
         // Em seguida, excluir os registros encontrados
         object_client.methodCall(
           "execute_kw",
-          [ODOO_DB, uid, ODOO_PASSWORD, "x_receitas", "unlink", [[recordId]]],
+          [
+            ODOO_DB,
+            uid,
+            ODOO_PASSWORD,
+            "x_receitas",
+            "unlink",
+            [[recordId.id]],
+          ],
           (err, result) => {
             if (err) {
               reject(err);
             } else {
-              resolve(result); // Retorna o número de registros excluídos
+              resolve(result);
             }
           }
         );
