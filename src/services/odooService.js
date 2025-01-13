@@ -21,51 +21,52 @@ export async function odoo_authenticate() {
 
 export async function create_invoice_odoo(uid, data) {
   return new Promise((resolve, reject) => {
-    // const user_name = search_invoice_name(data);
-
-    const object_client = create_client("/xmlrpc/2/object", config.odoo.url);
-    object_client.methodCall(
-      "execute_kw",
-      [
-        config.odoo.db,
-        uid,
-        config.odoo.password,
-        "x_receitas",
-        "create",
+    search_invoice_name(data).then((user_name) => {
+      const object_client = create_client("/xmlrpc/2/object", config.odoo.url);
+      object_client.methodCall(
+        "execute_kw",
         [
-          {
-            x_studio_date: data.dateCreated,
-            x_name: data.payment.id,
-            x_studio_descrio: data.payment.description,
-            x_studio_id_1: data.payment.customer,
-            ...(data.payment.dueDate
-              ? { x_studio_vencimento: data.payment.dueDate }
-              : {}),
-            ...(data.payment.paymentDate
-              ? { x_studio_data_de_pagamento: data.payment.paymentDate }
-              : {}),
-            ...(data.payment.creditDate
-              ? { x_studio_data_de_crdito: data.payment.creditDate }
-              : {}),
-            x_studio_status: data.payment.status,
-            x_studio_value: data.payment.value,
-            x_studio_valor_lquido: data.payment.netValue,
-            ...(data.payment.billingType &&
-            data.payment.billingType !== "UNDEFINED"
-              ? { x_studio_forma_de_pagamento: data.payment.billingType }
-              : {}),
-            x_studio_nmero_da_fatura: parseInt(data.payment.invoiceNumber) || 0,
-          },
+          config.odoo.db,
+          uid,
+          config.odoo.password,
+          "x_receitas",
+          "create",
+          [
+            {
+              x_studio_date: data.dateCreated,
+              x_name: user_name.toString(),
+              x_studio_descrio: data.payment.description,
+              x_studio_id_1: data.payment.customer,
+              ...(data.payment.dueDate
+                ? { x_studio_vencimento: data.payment.dueDate }
+                : {}),
+              ...(data.payment.paymentDate
+                ? { x_studio_data_de_pagamento: data.payment.paymentDate }
+                : {}),
+              ...(data.payment.creditDate
+                ? { x_studio_data_de_crdito: data.payment.creditDate }
+                : {}),
+              x_studio_status: data.payment.status,
+              x_studio_value: data.payment.value,
+              x_studio_valor_lquido: data.payment.netValue,
+              ...(data.payment.billingType &&
+              data.payment.billingType !== "UNDEFINED"
+                ? { x_studio_forma_de_pagamento: data.payment.billingType }
+                : {}),
+              x_studio_nmero_da_fatura:
+                parseInt(data.payment.invoiceNumber) || 0,
+            },
+          ],
         ],
-      ],
-      (err, createdId) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(createdId);
+        (err, createdId) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(createdId);
+          }
         }
-      }
-    );
+      );
+    });
   });
 }
 

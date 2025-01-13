@@ -9,12 +9,12 @@ import xmlrpc.client
 ODOO_URL = "https://ebramev-corporativo.odoo.com/"
 ODOO_DB = "ebramev-corporativo"
 ODOO_USERNAME = "marketing3@ebramev.com.br"
-ODOO_PASSWORD = "#"
+ODOO_PASSWORD = "4f2f61da00b82bf50bc98ecb89ce8df2cd9a67a8"
 
 payments_url = "https://api.asaas.com/v3/payments"
 
 # Token de acesso
-ASAAS_KEY = "#"
+ASAAS_KEY = "$aact_MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmQ5OTUyNzVkLTI3ZDEtNDc2Ny05ZjRiLTFhZTlkYzk4NjdkZjo6JGFhY2hfZTgyMjFkNTAtYTY4ZC00Yzg3LTgwNjQtZjE5MmQwMzViYTQ3"
 
 headers = {
     "accept": "application/json",
@@ -31,6 +31,11 @@ def fetch_asaas_data(url, params=None):
         print(f"Error fetching data from {url}: {e}")
         return None
 
+def get_user_name(user_id):
+    """Fetch user name from API."""
+    user_url = f"https://api.asaas.com/v3/customers/{user_id}"
+    user_data = fetch_asaas_data(user_url)
+    return user_data.get("name")
 
 def get_asaas_paginated_data(url, params=None):
     """Fetch all paginated data from API."""
@@ -38,7 +43,7 @@ def get_asaas_paginated_data(url, params=None):
     pag = 0
     limit = 100
 
-    while pag < 5:
+    while True:
         params = params or {}
         params.update({"offset": pag, "limit": limit})
 
@@ -46,6 +51,9 @@ def get_asaas_paginated_data(url, params=None):
 
         if temp_data is None or not temp_data['data']:
             break
+
+        for item in temp_data['data']:
+            item['customer_name'] = get_user_name(item['customer'])
 
         all_data.extend(temp_data['data'])
 
@@ -63,12 +71,6 @@ usuarios_data = get_asaas_paginated_data(payments_url)  # Já retorna uma lista 
 
 # Filtrar objetos Python com list comprehensions
 output_dict = [i for i in usuarios_data if datetime.strptime(i["dateCreated"], '%Y-%m-%d').date() >= datetime(2025, 1, 1).date()]
-
-# Transformar o objeto Python de volta para JSON formatado
-json_indent = json.dumps(output_dict, indent=2)
-
-with open("cobrancas-filtradas-legal.json", "w") as outfile:
-    outfile.write(json_indent)
 
 
 if not ODOO_PASSWORD:
@@ -95,7 +97,7 @@ for item in output_dict:
         'create',
         [{
             "x_studio_date": item["dateCreated"],
-            "x_name": item["id"],
+            "x_name": item["customer_name"],
             "x_studio_descrio": item["description"],
             "x_studio_id_1": item["customer"],
             **({"x_studio_vencimento": item["dueDate"]} if item.get("dueDate") else {}),

@@ -6,12 +6,13 @@ export default {
   port: 5000,
   asaas: {
     url: "https://api.asaas.com/v3/customers",
-    token: process.env.ASAAS_KEY,
+    token:
+      "$aact_MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmQ5OTUyNzVkLTI3ZDEtNDc2Ny05ZjRiLTFhZTlkYzk4NjdkZjo6JGFhY2hfZTgyMjFkNTAtYTY4ZC00Yzg3LTgwNjQtZjE5MmQwMzViYTQ3",
   },
   odoo: {
     url: "https://ebramev-corporativo.odoo.com",
     db: "ebramev-corporativo",
     username: "marketing3@ebramev.com.br",
-    password: "4f2f61da00b82bf50bc98ecb89ce8df2cd9a67a8",
+    password: process.env.ODOO_KEY,
   },
 };
