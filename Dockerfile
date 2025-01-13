@@ -20,4 +20,4 @@ EXPOSE 5000
 ENV ODOO_KEY=your_odoo_password_here
 
 # Comando para iniciar o servidor
-CMD ["node", "app.js"]
+CMD ["node", "src/app.js"]

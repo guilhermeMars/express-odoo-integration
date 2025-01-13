@@ -1,31 +1,13 @@
-const express = require("express");
-const xmlrpc = require("xmlrpc");
-require("dotenv").config();
+import { create_client } from "../utils/xmlrpcClient.js";
+import { search_invoice_name } from "./asaasService.js";
+import config from "../config/index.js";
 
-const app = express();
-const port = 5000;
-
-app.use(express.json());
-
-const ODOO_URL = "https://ebramev-corporativo.odoo.com";
-const ODOO_DB = "ebramev-corporativo";
-const ODOO_USERNAME = "marketing3@ebramev.com.br";
-const ODOO_PASSWORD = process.env.ODOO_KEY;
-
-// Helper function to create XML-RPC client
-function create_client(path) {
-  return xmlrpc.createClient({
-    url: `${ODOO_URL}${path}`,
-  });
-}
-
-// Authenticate with Odoo
-async function odoo_authenticate() {
+export async function odoo_authenticate() {
   return new Promise((resolve, reject) => {
-    const common_client = create_client("/xmlrpc/2/common");
+    const common_client = create_client("/xmlrpc/2/common", config.odoo.url);
     common_client.methodCall(
       "authenticate",
-      [ODOO_DB, ODOO_USERNAME, ODOO_PASSWORD, {}],
+      [config.odoo.db, config.odoo.username, config.odoo.password, {}],
       (err, uid) => {
         if (err || !uid) {
           reject(err || new Error("Authentication failed"));
@@ -37,16 +19,17 @@ async function odoo_authenticate() {
   });
 }
 
-async function create_invoice_odoo(uid, data) {
+export async function create_invoice_odoo(uid, data) {
   return new Promise((resolve, reject) => {
-    const object_client = create_client("/xmlrpc/2/object");
+    // const user_name = search_invoice_name(data);
+
+    const object_client = create_client("/xmlrpc/2/object", config.odoo.url);
     object_client.methodCall(
       "execute_kw",
       [
-        ODOO_DB,
+        config.odoo.db,
         uid,
-        ODOO_PASSWORD,
-        // Alterar
+        config.odoo.password,
         "x_receitas",
         "create",
         [
@@ -86,15 +69,15 @@ async function create_invoice_odoo(uid, data) {
   });
 }
 
-async function update_invoice_odoo(uid, data) {
+export async function update_invoice_odoo(uid, data) {
   return new Promise((resolve, reject) => {
-    const object_client = create_client("/xmlrpc/2/object");
+    const object_client = create_client("/xmlrpc/2/object", config.odoo.url);
     object_client.methodCall(
       "execute_kw",
       [
-        ODOO_DB,
+        config.odoo.db,
         uid,
-        ODOO_PASSWORD,
+        config.odoo.password,
         // Alterar
         "x_receitas",
         "search_read",
@@ -115,9 +98,9 @@ async function update_invoice_odoo(uid, data) {
         object_client.methodCall(
           "execute_kw",
           [
-            ODOO_DB,
+            config.odoo.db,
             uid,
-            ODOO_PASSWORD,
+            config.odoo.password,
             "x_receitas",
             "write",
             [
@@ -161,16 +144,16 @@ async function update_invoice_odoo(uid, data) {
   });
 }
 
-async function delete_invoice_odoo(uid, data) {
+export async function delete_invoice_odoo(uid, data) {
   return new Promise((resolve, reject) => {
-    const object_client = create_client("/xmlrpc/2/object");
+    const object_client = create_client("/xmlrpc/2/object", config.odoo.url);
 
     object_client.methodCall(
       "execute_kw",
       [
-        ODOO_DB,
+        config.odoo.db,
         uid,
-        ODOO_PASSWORD,
+        config.odoo.password,
         // Alterar
         "x_receitas",
         "search_read",
@@ -191,9 +174,9 @@ async function delete_invoice_odoo(uid, data) {
         object_client.methodCall(
           "execute_kw",
           [
-            ODOO_DB,
+            config.odoo.db,
             uid,
-            ODOO_PASSWORD,
+            config.odoo.password,
             "x_receitas",
             "unlink",
             [[recordId.id]],
@@ -210,61 +193,3 @@ async function delete_invoice_odoo(uid, data) {
     );
   });
 }
-
-app.post("/create-invoice-odoo", async (req, res) => {
-  try {
-    const { body } = req;
-    if (!body) {
-      return res
-        .status(400)
-        .json({ status: "error", message: `Missing request ${body}` });
-    }
-
-    const uid = await odoo_authenticate();
-    const created_id = await create_invoice_odoo(uid, body);
-
-    res.json({ status: "success", created_id });
-  } catch (error) {
-    res.status(500).json({ status: "error", message: error.message });
-  }
-});
-
-app.post("/update-invoice-odoo", async (req, res) => {
-  try {
-    const { body } = req;
-    if (!body) {
-      return res
-        .status(400)
-        .json({ status: "error", message: `Missing request ${body}` });
-    }
-
-    const uid = await odoo_authenticate();
-    const updated_id = await update_invoice_odoo(uid, body);
-
-    res.json({ status: "success", updated_id });
-  } catch (error) {
-    res.status(500).json({ status: "error", message: error.message });
-  }
-});
-
-app.post("/delete-invoice-odoo", async (req, res) => {
-  try {
-    const { body } = req;
-    if (!body) {
-      return res
-        .status(400)
-        .json({ status: "error", message: `Missing request ${body}` });
-    }
-
-    const uid = await odoo_authenticate();
-    const deleted_id = await delete_invoice_odoo(uid, body);
-
-    res.json({ status: "success", deleted_id });
-  } catch (error) {
-    res.status(500).json({ status: "error", message: error.message });
-  }
-});
-
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
