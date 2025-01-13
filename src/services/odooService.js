@@ -35,6 +35,7 @@ export async function create_invoice_odoo(uid, data) {
             {
               x_studio_date: data.dateCreated,
               x_name: user_name.toString(),
+              x_studio_id: data.payment.id,
               x_studio_descrio: data.payment.description,
               x_studio_id_1: data.payment.customer,
               ...(data.payment.dueDate
@@ -82,7 +83,7 @@ export async function update_invoice_odoo(uid, data) {
         // Alterar
         "x_receitas",
         "search_read",
-        [[["x_name", "=", data.payment.id]]],
+        [[["x_studio_id", "=", data.payment.id]]],
         { limit: 1 },
       ],
       (err, recordIds) => {
@@ -95,7 +96,6 @@ export async function update_invoice_odoo(uid, data) {
 
         const recordId = recordIds[0];
 
-        // Em seguida, excluir os registros encontrados
         object_client.methodCall(
           "execute_kw",
           [
@@ -158,7 +158,7 @@ export async function delete_invoice_odoo(uid, data) {
         // Alterar
         "x_receitas",
         "search_read",
-        [[["x_name", "=", data.payment.id]]],
+        [[["x_studio_id", "=", data.payment.id]]],
         { limit: 1 },
       ],
       (err, recordIds) => {

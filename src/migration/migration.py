@@ -98,6 +98,7 @@ for item in output_dict:
         [{
             "x_studio_date": item["dateCreated"],
             "x_name": item["customer_name"],
+            "x_studio_id": item["id"],
             "x_studio_descrio": item["description"],
             "x_studio_id_1": item["customer"],
             **({"x_studio_vencimento": item["dueDate"]} if item.get("dueDate") else {}),
