@@ -5,7 +5,7 @@ dotenv.config();
 export default {
   port: 5000,
   asaas: {
-    url: "https://api.asaas.com/v3/customers",
+    user_url: "https://api.asaas.com/v3/customers",
     token:
       "$aact_MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmQ5OTUyNzVkLTI3ZDEtNDc2Ny05ZjRiLTFhZTlkYzk4NjdkZjo6JGFhY2hfZTgyMjFkNTAtYTY4ZC00Yzg3LTgwNjQtZjE5MmQwMzViYTQ3",
   },

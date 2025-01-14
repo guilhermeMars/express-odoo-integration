@@ -19,7 +19,7 @@ export async function odoo_authenticate() {
   });
 }
 
-export async function create_invoice_odoo(uid, data) {
+export async function create_cobranca_odoo(uid, data) {
   return new Promise((resolve, reject) => {
     search_invoice_name(data).then((user_name) => {
       const object_client = create_client("/xmlrpc/2/object", config.odoo.url);
@@ -71,7 +71,7 @@ export async function create_invoice_odoo(uid, data) {
   });
 }
 
-export async function update_invoice_odoo(uid, data) {
+export async function update_cobranca_odoo(uid, data) {
   return new Promise((resolve, reject) => {
     search_invoice_name(data).then((user_name) => {
       const object_client = create_client("/xmlrpc/2/object", config.odoo.url);
@@ -147,7 +147,7 @@ export async function update_invoice_odoo(uid, data) {
   });
 }
 
-export async function delete_invoice_odoo(uid, data) {
+export async function delete_cobranca_odoo(uid, data) {
   return new Promise((resolve, reject) => {
     const object_client = create_client("/xmlrpc/2/object", config.odoo.url);
 

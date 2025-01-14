@@ -1,11 +1,11 @@
 import {
-  create_invoice_odoo,
-  delete_invoice_odoo,
-  update_invoice_odoo,
+  create_cobranca_odoo,
+  delete_cobranca_odoo,
+  update_cobranca_odoo,
   odoo_authenticate,
-} from "../services/odooService.js";
+} from "../services/odooCobrancaService.js";
 
-export async function controller_create_invoice(req, res) {
+export async function controller_create_cobranca(req, res) {
   try {
     const { body } = req;
     if (!body) {
@@ -15,7 +15,7 @@ export async function controller_create_invoice(req, res) {
     }
 
     const uid = await odoo_authenticate();
-    const created_id = await create_invoice_odoo(uid, body);
+    const created_id = await create_cobranca_odoo(uid, body);
 
     res.json({ status: "success", created_id });
   } catch (error) {
@@ -24,7 +24,7 @@ export async function controller_create_invoice(req, res) {
   }
 }
 
-export async function controller_update_invoice(req, res) {
+export async function controller_update_cobranca(req, res) {
   try {
     const { body } = req;
     if (!body) {
@@ -34,7 +34,7 @@ export async function controller_update_invoice(req, res) {
     }
 
     const uid = await odoo_authenticate();
-    const updated_id = await update_invoice_odoo(uid, body);
+    const updated_id = await update_cobranca_odoo(uid, body);
 
     res.json({ status: "success", updated_id });
   } catch (error) {
@@ -42,7 +42,7 @@ export async function controller_update_invoice(req, res) {
   }
 }
 
-export async function controller_delete_invoice(req, res) {
+export async function controller_delete_cobranca(req, res) {
   try {
     const { body } = req;
     if (!body) {
@@ -52,7 +52,7 @@ export async function controller_delete_invoice(req, res) {
     }
 
     const uid = await odoo_authenticate();
-    const deleted_id = await delete_invoice_odoo(uid, body);
+    const deleted_id = await delete_cobranca_odoo(uid, body);
 
     res.json({ status: "success", deleted_id });
   } catch (error) {

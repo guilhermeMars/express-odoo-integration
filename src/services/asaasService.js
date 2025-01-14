@@ -2,7 +2,7 @@ import config from "../config/index.js";
 
 export async function search_invoice_name(data) {
   try {
-    const user_url = `${config.asaas.url}/${data.payment.customer}`;
+    const user_url = `${config.asaas.user_url}/${data.payment.customer}`;
     console.log(user_url);
     const options = {
       method: "GET",

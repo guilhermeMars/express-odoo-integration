@@ -1,6 +1,6 @@
 import express from "express";
 import config from "./config/index.js";
-import invoiceRoutes from "./routes/invoiceRoutes.js";
+import invoiceRoutes from "./routes/cobrancaRoutes.js";
 
 const app = express();
 
