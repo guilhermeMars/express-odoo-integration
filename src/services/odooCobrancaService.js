@@ -92,7 +92,12 @@ export async function update_cobranca_odoo(uid, data) {
             return reject(err);
           }
           if (!recordIds || recordIds.length === 0) {
-            return reject(new Error("No matching records found for deletion"));
+            let createdCobrancaId = 0;
+            create_cobranca_odoo(uid, data).then((createdId) => {
+              createdCobrancaId = createdId;
+              resolve(createdCobrancaId);
+            });
+            return createdCobrancaId;
           }
 
           const recordId = recordIds[0];
@@ -168,7 +173,9 @@ export async function delete_cobranca_odoo(uid, data) {
           return reject(err);
         }
         if (!recordIds || recordIds.length === 0) {
-          return reject(new Error("No matching records found for deletion"));
+          // Not all data is present in the odoo database
+          // return reject(new Error("No matching records found for deletion"));
+          return null;
         }
 
         const recordId = recordIds[0];
