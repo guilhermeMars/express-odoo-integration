@@ -19,6 +19,37 @@ export async function odoo_authenticate() {
   });
 }
 
+export async function get_tag_id(data) {
+  const dueDate = new Date(data.payment.dueDate);
+  const today = new Date();
+  const differenceInMilliseconds = dueDate - today;
+  const differenceInDays = Math.floor(
+    differenceInMilliseconds / (1000 * 60 * 60 * 24)
+  );
+
+  if (differenceInDays < 0) {
+    return [(6, 0, [6])];
+  }
+  if (differenceInDays === 0) {
+    return [(6, 0, [7])];
+  }
+  if (differenceInDays <= 1) {
+    return [(6, 0, [5])];
+  }
+  if (differenceInDays <= 3) {
+    return [(6, 0, [4])];
+  }
+  if (differenceInDays <= 7) {
+    return [(6, 0, [3])];
+  }
+  if (differenceInDays <= 15) {
+    return [(6, 0, [2])];
+  }
+  if (differenceInDays >= 16) {
+    return [(6, 0, [1])];
+  }
+  return [(6, 0, [])];
+}
 export async function create_cobranca_odoo(uid, data) {
   return new Promise((resolve, reject) => {
     search_invoice_name(data).then((user_name) => {
@@ -48,6 +79,9 @@ export async function create_cobranca_odoo(uid, data) {
                 ? { x_studio_data_de_crdito: data.payment.creditDate }
                 : {}),
               x_studio_status: data.payment.status,
+              ...(data.payment.dueDate
+                ? { x_studio_tag_ids: get_tag_id(data) }
+                : {}),
               x_studio_value: data.payment.value,
               x_studio_valor_lquido: data.payment.netValue,
               ...(data.payment.billingType &&

@@ -8,10 +8,6 @@ import {
 export async function controller_create_cobranca(req, res) {
   try {
     const { body } = req;
-    const userAgent = req.headers["user-agent"];
-    const referer = req.headers["referer"]; // URL de onde veio a requisição
-    const origin = req.headers["origin"];
-
     if (!body) {
       return res
         .status(400)
@@ -21,14 +17,7 @@ export async function controller_create_cobranca(req, res) {
     const uid = await odoo_authenticate();
     const created_id = await create_cobranca_odoo(uid, body);
 
-    const jsonData = {
-      headers: req.headers,
-      userAgent: userAgent,
-      referer: referer,
-      origin: origin,
-    };
-
-    res.json({ status: "success", jsonData });
+    res.json({ status: "success", created_id });
   } catch (error) {
     console.log(error);
     res.status(500).json({ status: "error", message: error.message });
