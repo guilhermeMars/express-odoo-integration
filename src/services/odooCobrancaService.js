@@ -22,15 +22,17 @@ export async function odoo_authenticate() {
 export function get_tag_id(data) {
   const dueDate = new Date(data.payment.dueDate);
   const today = new Date();
-  const differenceInMilliseconds = dueDate - today;
-  const differenceInDays = Math.floor(
-    differenceInMilliseconds / (1000 * 60 * 60 * 24)
-  );
 
-  if (differenceInDays === 0) {
+  // Converting dates to day format (ignoring hours, minutes, seconds and milliseconds)
+  const dueDay = Math.floor(dueDate.getTime() / (1000 * 60 * 60 * 24));
+  const todayDay = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
+
+  const differenceInDays = dueDay - todayDay;
+
+  if (differenceInDays < 0) {
     return [6];
   }
-  if (differenceInDays < 0) {
+  if (differenceInDays === 0) {
     return [7];
   }
   if (differenceInDays <= 1) {
