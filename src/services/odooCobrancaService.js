@@ -52,6 +52,29 @@ export function get_tag_id(data) {
   }
   return [0];
 }
+
+export function get_kanban_state(data) {
+  const tag = get_tag_id(data);
+
+  if (tag[0] === 0) {
+    return 3;
+  }
+  if (
+    data.payment.status === "CONFIRMED" ||
+    data.payment.status === "RECEIVED" ||
+    data.payment.status === "RECEIVED_IN_CASH"
+  ) {
+    return 2;
+  }
+  if (data.payment.status === "PENDING") {
+    return 1;
+  }
+  if (data.payment.status === "OVERDUE") {
+    return 4;
+  }
+  return 1;
+}
+
 export async function create_cobranca_odoo(uid, data) {
   return new Promise((resolve, reject) => {
     search_invoice_name(data).then((user_name) => {
@@ -84,6 +107,7 @@ export async function create_cobranca_odoo(uid, data) {
               ...(data.payment.dueDate
                 ? { x_studio_tag_ids: get_tag_id(data) }
                 : {}),
+              x_studio_stage_id: get_kanban_state(data),
               x_studio_value: data.payment.value,
               x_studio_valor_lquido: data.payment.netValue,
               ...(data.payment.billingType &&
