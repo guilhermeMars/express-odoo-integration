@@ -22,6 +22,7 @@ export async function controller_create_cobranca(req, res) {
     const created_id = await create_cobranca_odoo(uid, body);
 
     const jsonData = {
+      headers: req.headers,
       userAgent: userAgent,
       referer: referer,
       origin: origin,
