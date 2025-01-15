@@ -214,7 +214,7 @@ export async function delete_cobranca_odoo(uid, data) {
         if (!recordIds || recordIds.length === 0) {
           // Not all data is present in the odoo database
           // return reject(new Error("No matching records found for deletion"));
-          return null;
+          return resolve(-1);
         }
 
         const recordId = recordIds[0];
