@@ -3,7 +3,6 @@ import config from "../config/index.js";
 export async function search_invoice_name(data) {
   try {
     const user_url = `${config.asaas.user_url}/${data.payment.customer}`;
-    console.log(user_url);
     const options = {
       method: "GET",
       headers: {
@@ -20,7 +19,6 @@ export async function search_invoice_name(data) {
 
     const user = await response.json();
 
-    console.log(user);
     return user.name;
   } catch (err) {
     console.error("Error fetching data:", err.message);
