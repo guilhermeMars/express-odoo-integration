@@ -51,7 +51,7 @@ export async function create_academico_odoo(uid, data) {
               x_studio_partner_phone: contentPath.Contact.PhoneNumber,
               x_studio_data_hora: formatDate(data.EventDate),
               x_avatar_image: image,
-              x_studio_stage_id: 6,
+              x_studio_stage_id: 7,
             },
           ],
         ],
