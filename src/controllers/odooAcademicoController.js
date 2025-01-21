@@ -12,7 +12,6 @@ export async function controller_create_academico(req, res) {
 
     const uid = await odoo_authenticate();
     const created_id = await create_academico_odoo(uid, body);
-    console.log(created_id);
     res.json({ status: "success", created_id });
   } catch (error) {
     res.status(500).json({ status: "error", message: error.message });

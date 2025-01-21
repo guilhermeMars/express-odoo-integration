@@ -30,7 +30,6 @@ export async function create_academico_odoo(uid, data) {
     data.Payload.Content.Contact.ProfilePictureUrl
   );
 
-  console.log(image);
   if (
     data.Type === "ChatSectorChanged" &&
     data.Payload.Content.Sector.Name === "Acadêmico (Ranna)"
